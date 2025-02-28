@@ -1,13 +1,11 @@
 import React from 'react'
-import SidebarComponent from './components/Sidebar'
-import Navbar from './components/Navbar'
+import { Dashboard } from 'grommet-icons'
 
 
 const page = () => {
   return (
     <div>
-      {/* <Navbar />
-      <SidebarComponent /> */}
+      <Dashboard/>
     </div>
   )
 }
