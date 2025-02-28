@@ -1,11 +1,12 @@
 import React from 'react'
-import { Dashboard } from 'grommet-icons'
+import Hero from './dashboard/page'
+
 
 
 const page = () => {
   return (
     <div>
-      <Dashboard/>
+      <Hero/>
     </div>
   )
 }
