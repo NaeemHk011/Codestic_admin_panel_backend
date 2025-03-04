@@ -31,7 +31,7 @@ const ProjectForm = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/addprojects', {
+      const response = await fetch('https://admin-panel-backend-8vo5.vercel.app/api/addprojects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

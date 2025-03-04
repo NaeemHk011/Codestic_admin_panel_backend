@@ -1,14 +1,31 @@
-import React from 'react'
-import Hero from './dashboard/page'
+"use client";
 
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import Hero from "./dashboard/page";
 
+// Dynamically disable SSR
+const ClientOnlyComponent = dynamic(() => Promise.resolve(() => <p>This component is client-side only.</p>), { ssr: false });
 
-const page = () => {
+export default function Page() {
+  const [isClient, setIsClient] = useState(false);
+  const [currentTime, setCurrentTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIsClient(true);
+    setCurrentTime(new Date().toLocaleString()); // Fix hydration issue
+  }, []);
+
   return (
     <div>
+      <h1>Next.js Hydration Fix</h1>
       <Hero/>
-    </div>
-  )
-}
+      
+      {/* Prevents SSR Issues */}
+      {isClient ? <p>Current Time: {currentTime}</p> : <p>Loading...</p>}
 
-export default page
+      {/* Client-only Component Inside Same File */}
+      <ClientOnlyComponent />
+    </div>
+  );
+}

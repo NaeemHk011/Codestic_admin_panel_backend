@@ -31,10 +31,10 @@ const SidebarComponent = () => {
 
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <div className="flex items-center space-x-4 text-gray-300">
-          <img src="https://via.placeholder.com/40" alt="Profile" className="w-10 h-10 rounded-full" />
+          <img src="https://cdn-icons-png.freepik.com/512/219/219988.png" alt="Profile" className="w-10 h-10 rounded-full" />
           <div>
-            <p className="font-medium">Admin User</p>
-            <p className="text-sm text-gray-500">admin@example.com</p>
+            <p className="font-medium">Naeem</p>
+            <p className="text-sm text-gray-500">admin@codestic.com</p>
           </div>
         </div>
       </div>
