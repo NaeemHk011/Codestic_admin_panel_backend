@@ -23,6 +23,14 @@ const Hero = () => {
   const [totalPayment, setTotalPayment] = useState<number>(0);
   const [PendingPayment, setPendingPayment] = useState<number>(0);
 
+
+  useEffect(() => {
+console.log(localStorage.getItem('token'))
+    if (!localStorage.getItem('token')) {
+      window.location.href = '/login';
+    }
+    
+  },[])
  
 
   useEffect(() => {
@@ -182,4 +190,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default Hero; 

@@ -3,32 +3,44 @@ import React, { useRef } from 'react';
 import SidebarComponent from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 
-const ProjectForm = () => {
-  const formRef = useRef({
-    name: useRef<HTMLInputElement>(null),
-    client: useRef<HTMLInputElement>(null),
-    status: useRef<HTMLSelectElement>(null),
-    payment: useRef<HTMLInputElement>(null),
-    dueDate: useRef<HTMLInputElement>(null),
-    startDate: useRef<HTMLInputElement>(null),
-    developer: useRef<HTMLInputElement>(null),
-    completion: useRef<HTMLInputElement>(null)
-  });
+const ProjectForm: React.FC = () => {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const clientRef = useRef<HTMLInputElement>(null);
+  const statusRef = useRef<HTMLSelectElement>(null);
+  const paymentRef = useRef<HTMLInputElement>(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
+  const startDateRef = useRef<HTMLInputElement>(null);
+  const developerRef = useRef<HTMLInputElement>(null);
+  const completionRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Empty input fields after adding project
+  const resetForm = (): void => {
+    if (nameRef.current) nameRef.current.value = '';
+    if (clientRef.current) clientRef.current.value = '';
+    if (statusRef.current) statusRef.current.value = '';
+    if (paymentRef.current) paymentRef.current.value = '';
+    if (dueDateRef.current) dueDateRef.current.value = '';
+    if (startDateRef.current) startDateRef.current.value = '';
+    if (developerRef.current) developerRef.current.value = '';
+    if (completionRef.current) completionRef.current.value = '';
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent the default form submission
 
     const newProject = {
       id: Math.random(), // Temporary ID generation
-      name: formRef.current.name.current?.value,
-      client: formRef.current.client.current?.value,
-      status: formRef.current.status.current?.value,
-      payment: formRef.current.payment.current?.value,
-      startDate: formRef.current.startDate.current?.value,
-      dueDate: formRef.current.dueDate.current?.value,
-      developer: formRef.current.developer.current?.value,
-      completion: formRef.current.completion.current?.value
+      name: nameRef.current?.value || '',
+      client: clientRef.current?.value || '',
+      status: statusRef.current?.value || '',
+      payment: paymentRef.current?.value || '',
+      startDate: startDateRef.current?.value || '',
+      dueDate: dueDateRef.current?.value || '',
+      developer: developerRef.current?.value || '',
+      completion: completionRef.current?.value || ''
     };
+
+    resetForm(); // Clear the form after submission
 
     try {
       const response = await fetch('https://admin-panel-backend-8vo5.vercel.app/api/addprojects', {
@@ -61,7 +73,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Project Name</label>
                 <input
                   type="text"
-                  ref={formRef.current.name}
+                  ref={nameRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 />
@@ -72,7 +84,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Client</label>
                 <input
                   type="text"
-                  ref={formRef.current.client}
+                  ref={clientRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 />
@@ -82,7 +94,7 @@ const ProjectForm = () => {
               <div>
                 <label className="block text-sm font-medium text-black mb-1">Status</label>
                 <select
-                  ref={formRef.current.status}
+                  ref={statusRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 >
@@ -98,7 +110,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Payment</label>
                 <input
                   type="number"
-                  ref={formRef.current.payment}
+                  ref={paymentRef}
                   placeholder="Enter amount"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
@@ -110,7 +122,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Start Date</label>
                 <input
                   type="date"
-                  ref={formRef.current.startDate}
+                  ref={startDateRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 />
@@ -121,7 +133,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Due Date</label>
                 <input
                   type="date"
-                  ref={formRef.current.dueDate}
+                  ref={dueDateRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 />
@@ -132,7 +144,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Project Source</label>
                 <input
                   type="text"
-                  ref={formRef.current.developer}
+                  ref={developerRef}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
                   required
                 />
@@ -143,7 +155,7 @@ const ProjectForm = () => {
                 <label className="block text-sm font-medium text-black mb-1">Completion (%)</label>
                 <input
                   type="number"
-                  ref={formRef.current.completion}
+                  ref={completionRef}
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-gray-100"
