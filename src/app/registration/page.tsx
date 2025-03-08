@@ -18,7 +18,7 @@ const SignUp: React.FC = () => {
     
 console.log('static data arha he: ' + userData)
     try {
-      const response = await fetch("http://localhost:3000/api/signup", {
+      const response = await fetch("https://admin-panel-backend-8vo5.vercel.app/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
