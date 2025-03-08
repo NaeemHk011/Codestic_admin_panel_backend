@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     };
 console.log('static data of login', userData);
     try {
-      const response = await fetch("https://admin-panel-backend-8vo5.vercel.app/api/login", {
+      const response = await fetch("https://codestic-nk-1.vercel.app/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),

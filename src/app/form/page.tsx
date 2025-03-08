@@ -43,7 +43,7 @@ const ProjectForm: React.FC = () => {
     resetForm(); // Clear the form after submission
 
     try {
-      const response = await fetch('https://admin-panel-backend-8vo5.vercel.app/api/addprojects', {
+      const response = await fetch('https://codestic-nk-1.vercel.app/api/addprojects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

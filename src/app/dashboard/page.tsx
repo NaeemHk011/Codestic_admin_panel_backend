@@ -36,7 +36,7 @@ console.log(localStorage.getItem('token'))
   useEffect(() => {
     const fetchdata = async () => {
       try {
-        const response = await fetch('https://admin-panel-backend-8vo5.vercel.app/api/projects');
+        const response = await fetch('https://codestic-nk-1.vercel.app/api/projects');
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }

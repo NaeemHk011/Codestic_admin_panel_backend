@@ -15,17 +15,17 @@ const SignUp: React.FC = () => {
       email: emailRef.current.value,
       password: passwordRef.current.value,
     };
-    
-console.log('static data arha he: ' + userData)
+
+    console.log('static data arha he: ' + userData)
     try {
-      const response = await fetch("https://admin-panel-backend-8vo5.vercel.app/api/signup", {
+      const response = await fetch("https://codestic-nk-1.vercel.app/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),
       });
 
       const data = await response.json();
-      console.log('api k response men yeh arha he',data);
+      console.log('api k response men yeh arha he', data);
       if (response.ok) {
         setMessage(data.message);
       } else {
