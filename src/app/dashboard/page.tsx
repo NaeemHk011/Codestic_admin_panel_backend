@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 
 // Define types for project data
 interface Project {
-  id: number;
+  _id: number;
   name: string;
   client: string;
   status: 'In Progress' | 'Completed' | 'On Hold';
@@ -19,24 +18,61 @@ const Hero = () => {
   const [projects, setProjects] = useState<Project[]>([]);  // Type the state as an array of Project
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [ActiveProject, setActiveProject] = useState<number>();
+  const [activeProject, setActiveProject] = useState<number>(0);
   const [totalPayment, setTotalPayment] = useState<number>(0);
-  const [PendingPayment, setPendingPayment] = useState<number>(0);
-
+  const [pendingPayment, setPendingPayment] = useState<number>(0);
+  const [editingProject, setEditingProject] = useState<Project | null>(null); // State for editing project
 
   useEffect(() => {
-console.log(localStorage.getItem('token'))
-    if (!localStorage.getItem('token')) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       window.location.href = '/login';
     }
-    
-  },[])
- 
+  }, []);
+
+
+
+  const updateProject = async (updatedProject: Project) => {
+    try {
+      const response = await fetch(`https://codesticsolution.vercel.app/api/projects/${updatedProject._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProject),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update project');
+      }
+      const newProjects = projects.map((project) =>
+        project._id === updatedProject._id ? updatedProject : project
+      );
+      setProjects(newProjects);
+      setEditingProject(null); // Close the edit form/modal
+    } catch (error) {
+      setError('Error updating project');
+    }
+  };
+
+  const deleteProject = async (projectId: number) => {
+    try {
+      const response = await fetch(`https://codesticsolution.vercel.app/api/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+      const newProjects = projects.filter((project) => project._id !== projectId);
+      setProjects(newProjects);
+    } catch (error) {
+      setError('Error deleting project');
+    }
+  };
 
   useEffect(() => {
     const fetchdata = async () => {
       try {
-        const response = await fetch('https://codestic-nk-1.vercel.app/api/projects');
+        const response = await fetch('https://codesticsolution.vercel.app/api/projects');
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }
@@ -53,31 +89,29 @@ console.log(localStorage.getItem('token'))
     fetchdata();
   }, []);
 
-
   useEffect(() => {
     if (!projects || projects.length === 0) return; // Agar projects empty ho toh calculation avoid kare
-  
+
     // Active projects count karna
     let activeCount = 0;
     let totalPayment = 0;
     let pendingPayment = 0;
-  
+
     projects.forEach((project) => {
       const payment = parseInt(project.payment || "0"); // Ensure valid number
-  
+
       totalPayment += payment;
-  
+
       if (project.status === "In Progress") {
         activeCount++;
         pendingPayment += payment;
       }
     });
-  
+
     setTotalPayment(totalPayment);
     setActiveProject(activeCount);
     setPendingPayment(pendingPayment);
   }, [projects]);
-  
 
   return (
     <div className="flex-1 p-8 bg-gray-50 ml-64 mt-16">
@@ -105,7 +139,7 @@ console.log(localStorage.getItem('token'))
               </svg>
             </span>
           </div>
-          <p className="text-2xl font-semibold mt-2">{ActiveProject}</p>
+          <p className="text-2xl font-semibold mt-2">{activeProject}</p>
           <p className="text-green-500 text-sm mt-2">Project In Progress</p>
         </div>
 
@@ -119,7 +153,7 @@ console.log(localStorage.getItem('token'))
             </span>
           </div>
           <p className="text-2xl font-semibold mt-2">{totalPayment}</p>
-          <p className="text-red-500 text-sm mt-2">{ActiveProject} pending invoices</p>
+          <p className="text-red-500 text-sm mt-2">{activeProject} pending invoices</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -131,7 +165,7 @@ console.log(localStorage.getItem('token'))
               </svg>
             </span>
           </div>
-          <p className="text-2xl font-semibold mt-2">{PendingPayment}</p>
+          <p className="text-2xl font-semibold mt-2">{pendingPayment}</p>
           <p className="text-purple-500 text-sm mt-2">+1 new developer</p>
         </div>
       </div>
@@ -151,11 +185,12 @@ console.log(localStorage.getItem('token'))
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Developer</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {projects.map((project) => (
-                  <tr key={project.id}>
+                  <tr key={project._id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{project.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{project.client}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -175,6 +210,20 @@ console.log(localStorage.getItem('token'))
                       </div>
                       <span className="text-xs text-gray-500 mt-1">{project.completion}%</span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        className="text-indigo-600 hover:text-indigo-900 mr-2"
+                        onClick={() => setEditingProject(project)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-900"
+                        onClick={() => deleteProject(project._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -183,6 +232,102 @@ console.log(localStorage.getItem('token'))
         </div>
       </div>
 
+      {/* Edit Project Modal */}
+      {editingProject && (
+        <div className="fixed mt-20 inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md overflow-y-auto max-h-[90vh]">
+            <h2 className="text-xl font-semibold mb-4">Edit Project</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateProject(editingProject);
+              }}
+            >
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Project Name</label>
+                <input
+                  type="text"
+                  value={editingProject.name}
+                  onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Client</label>
+                <input
+                  type="text"
+                  value={editingProject.client}
+                  onChange={(e) => setEditingProject({ ...editingProject, client: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  value={editingProject.status}
+                  onChange={(e) => setEditingProject({ ...editingProject, status: e.target.value as 'In Progress' | 'Completed' | 'On Hold' })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                >
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="On Hold">On Hold</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Payment</label>
+                <input
+                  type="text"
+                  value={editingProject.payment}
+                  onChange={(e) => setEditingProject({ ...editingProject, payment: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Due Date</label>
+                <input
+                  type="text"
+                  value={editingProject.dueDate}
+                  onChange={(e) => setEditingProject({ ...editingProject, dueDate: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Developer</label>
+                <input
+                  type="text"
+                  value={editingProject.developer}
+                  onChange={(e) => setEditingProject({ ...editingProject, developer: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Completion (%)</label>
+                <input
+                  type="number"
+                  value={editingProject.completion}
+                  onChange={(e) => setEditingProject({ ...editingProject, completion: parseInt(e.target.value) })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
+                  onClick={() => setEditingProject(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>)}
+
       {/* Loading or Error Message */}
       {loading && <div className="mt-4 text-center">Loading...</div>}
       {error && <div className="mt-4 text-center text-red-500">{error}</div>}
@@ -190,4 +335,4 @@ console.log(localStorage.getItem('token'))
   );
 };
 
-export default Hero; 
+export default Hero;

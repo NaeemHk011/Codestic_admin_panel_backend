@@ -19,7 +19,7 @@ export default function Page() {
   return (
     <div>
       <h1>Next.js Hydration Fix</h1>
-      <Hero/>
+      <Hero/> 
       
       {/* Prevents SSR Issues */}
       {isClient ? <p>Current Time: {currentTime}</p> : <p>Loading...</p>}
